@@ -39,8 +39,8 @@ export default class Manga {
         if( !this.connector || !this.connector.existingMangas ) {
             return;
         }
-        let sanatizedTitle = Engine.Storage.sanatizePath ( this.title );
-        if( this.connector.existingMangas[sanatizedTitle] ) {
+        let sanitizedTitle = Engine.Storage.sanitizePath ( this.title );
+        if( this.connector.existingMangas[sanitizedTitle] ) {
             this.setStatus( DownloadStatus.completed );
         } else {
             this.setStatus( DownloadStatus.available );

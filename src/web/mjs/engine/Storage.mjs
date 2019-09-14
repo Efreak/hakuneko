@@ -636,7 +636,7 @@ export default class Storage {
      */
     saveVideoChunkTemp( content ) {
         try{
-            let file = this.path.join( this.temp, this.sanatizePath( content.name ) );
+            let file = this.path.join( this.temp, this.sanitizePath( content.name ) );
             return this._writeFile( file, content.data );
         } catch( error ) {
             return Promise.reject( error );
@@ -655,7 +655,7 @@ export default class Storage {
             if( !fileOut ) {
                 let directory = this._mangaOutputPath( chapter.manga );
                 this._createDirectoryChain( directory );
-                let file = this.path.join( directory, this.sanatizePath( chapter.title + EpisodeFormat.mp4 ) );
+                let file = this.path.join( directory, this.sanitizePath( chapter.title + EpisodeFormat.mp4 ) );
                 fileOut = this.fs.openSync( file, 'w' );
             }
             let data = this.fs.readFileSync( files[index] );
@@ -673,9 +673,9 @@ export default class Storage {
     saveChapterFileM3U8( chapter, content ) {
         try {
             let file = this._mangaOutputPath( chapter.manga );
-            file = this.path.join( file, this.sanatizePath( chapter.title + EpisodeFormat.m3u8 ) );
+            file = this.path.join( file, this.sanitizePath( chapter.title + EpisodeFormat.m3u8 ) );
             this._createDirectoryChain( file );
-            file = this.path.join( file, this.sanatizePath( content.name ) );
+            file = this.path.join( file, this.sanitizePath( content.name ) );
             return this._writeFile( file, content.data );
         } catch( error ) {
             return Promise.reject( error );
@@ -691,8 +691,8 @@ export default class Storage {
         return new Promise( ( resolve, reject ) => {
             let directory = this._mangaOutputPath( chapter.manga );
             this._createDirectoryChain( directory );
-            let file = this.path.join( directory, this.sanatizePath( chapter.title + EpisodeFormat.mkv ) );
-            directory = this.path.join( directory, this.sanatizePath( chapter.title + EpisodeFormat.m3u8 ) );
+            let file = this.path.join( directory, this.sanitizePath( chapter.title + EpisodeFormat.mkv ) );
+            directory = this.path.join( directory, this.sanitizePath( chapter.title + EpisodeFormat.m3u8 ) );
             ffmpeg += ` -f matroska -y "${file}"`;
             this.exec( ffmpeg, { cwd: directory, windowsHide: true }, error => {
                 if( error ) {
@@ -710,7 +710,7 @@ export default class Storage {
     _connectorOutputPath( connector ) {
         let output = Engine.Settings.baseDirectory.value;
         if( Engine.Settings.useSubdirectory.value ) {
-            output = this.path.join( output, this.sanatizePath( connector.label ) );
+            output = this.path.join( output, this.sanitizePath( connector.label ) );
         }
         return output;
     }
@@ -720,7 +720,7 @@ export default class Storage {
      */
     _mangaOutputPath( manga ) {
         let output = this._connectorOutputPath( manga.connector );
-        output = this.path.join( output, this.sanatizePath( manga.title ) );
+        output = this.path.join( output, this.sanitizePath( manga.title ) );
         return output;
     }
 
@@ -729,7 +729,7 @@ export default class Storage {
      */
     _chapterOutputPath( chapter ) {
         let output = this._mangaOutputPath( chapter.manga );
-        output = this.path.join( output, this.sanatizePath( chapter.title ) );
+        output = this.path.join( output, this.sanitizePath( chapter.title ) );
         if( chapter.status === DownloadStatus.offline ) {
             return output;
         }
@@ -769,19 +769,19 @@ export default class Storage {
      * LINUX: wxT("/\r\n\t");
      * WINDOWS: wxT("\\/:*?\"<>|\r\n\t");
      */
-    sanatizePath ( path ) {
+    sanitizePath ( path ) {
         if( this.platform.indexOf( 'win' ) === 0 ) {
             // TODO: max. 260 characters per path
             path = path.replace( /[\\/:*?"<>|\r\n\t]/g, '' );
-            return path.replace( /\.+$/g, '' ).trim() // remove trailing dots and whitespaces
+            return path.replace( /\.+$/g, '' ).trim(); // remove trailing dots and whitespaces
         }
         if( this.platform.indexOf( 'linux' ) === 0 ) {
             return path.replace( /[/\r\n\t]/g, '' );
         }
         if( this.platform.indexOf( 'darwin' ) === 0 ) {
-            return path.replace( /[/:\r\n\t]/g, '' ).split(path.sep).map(part=>{
+            return path.join(path.replace( /[/:\r\n\t]/g, '' ).split(path.sep).map(part=>{
                 return part.substring(0,32); //max. 32 characters per part
-            }).join(path.sep);
+            }));
         }
         return path;
     }

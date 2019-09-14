@@ -61,7 +61,7 @@ export default class BookmarkConnector {
             Engine.Storage.mangaDirectoryExist( manga )
                 .then( () => {
                 // set existing manga list for related connector (used by manga.updateStatus function)
-                    manga.connector.existingMangas[ Engine.Storage.sanatizePath ( manga.title ) ] = true;
+                    manga.connector.existingMangas[ Engine.Storage.sanitizePath ( manga.title ) ] = true;
                     manga.updateStatus();
                 } )
                 .catch( () => { /* directory for bookmark does not yet exist */ } );

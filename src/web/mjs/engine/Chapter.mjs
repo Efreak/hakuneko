@@ -5,7 +5,7 @@ export default class Chapter {
         this.manga = manga;
         this.id = id;
         this.title = title;
-        this.file = status === DownloadStatus.offline ? this._getRawFileName( title ) : this._getSanatizedFileName( title ) ;
+        this.file = status === DownloadStatus.offline ? this._getRawFileName( title ) : this._getsanitizedFileName( title ) ;
         this.language = language;
         this.status = status;
         this.pageProcess = false;
@@ -40,8 +40,8 @@ export default class Chapter {
     /**
      *
      */
-    _getSanatizedFileName( title ) {
-        let name = Engine.Storage.sanatizePath( title );
+    _getsanitizedFileName( title ) {
+        let name = Engine.Storage.sanitizePath( title );
         let extension = Engine.Settings.chapterFormat.value !== ChapterFormat.img ? Engine.Settings.chapterFormat.value : '';
         return {
             name: name,
